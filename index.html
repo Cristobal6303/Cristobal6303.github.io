@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Evaluación sobrepresión</title>
+    <!--Diseño por cdn-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <!--Funcionalidades Ajax-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!--CDN alertas-->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!--CDN para graficos-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        $(window).on('load', function () {
+            setTimeout(function () {
+                $(".loader-page").css({
+                    visibility: "hidden",
+                    opacity: "0"
+                })
+            }, 2000);
+
+        });
+    </script>
+
+    <style>
+        .loader-page {
+            position: fixed;
+            z-index: 25000;
+            background: rgba(7, 7, 7, 0.959);
+            left: 0px;
+            top: 0px;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .3s ease;
+        }
+
+        .loader-page::before {
+            content: "";
+            position: absolute;
+            border: 8px solid rgba(23, 167, 4, 0.931);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            box-sizing: border-box;
+            border-left: 8px solid rgba(38, 206, 5, 0);
+            border-top: 8px solid rgba(11, 199, 5, 0.288);
+            animation: rotarload 1s linear infinite;
+            transform: rotate(0deg);
+        }
+
+        @keyframes rotarload {
+            0% {
+                transform: rotate(0deg)
+            }
+
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        .loader-page::after {
+            content: "";
+            position: absolute;
+            border: 8px solid rgba(6, 126, 6, 0.986);
+            width: 230px;
+            height: 230px;
+            border-radius: 55%;
+            box-sizing: border-box;
+            border-left: 8px solid rgba(8, 180, 23, 0.822);
+            border-top: 8px solid rgba(9, 192, 9, 0.623);
+            animation: rotarload 1s ease-out infinite;
+            transform: rotate(0deg);
+        }
+
+        .pRiesgo {
+            transition: all .3s ease;
+            filter: blur(15px);
+            filter: blur(10px);
+            filter: blur(5px);
+            filter: blur(0px);
+        }
+    </style>
+</head>
+
+<body onload="offline(), ubicacion()">
+    <!--Cargando pagina-->
+    <div class="loader-page">
+        <div class="row text-center p-3 m-0">
+            <p class="col-12 p-0 m-0 fs-2 fw-bold text-white">CCMIT</p>
+            <p class="col-12 p-0 m-0 fs-5 fst-italic text-success">Cargando...</p>
+        </div>
+    </div>
+    <main>
+        <!-- Contenido visual -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <!--Logotipo-->
+                <div class="row text-center p-0 m-0">
+                    <p class="col-12 p-0 m-0 fs-1 fw-bold text-white">CCMIT</p>
+                    <p class="col-12 p-0 m-0 fs-6 fst-italic text-success">Informática & Computación</p>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar"
+                    aria-labelledby="offcanvasDarkNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">EVALUACIÓN DE SOBREPRESIÓN</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#inicio_proyecto">INICIO</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tabla">TABLA DE DESCRIPCIÓN</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="#sobre_el_proyecto">CONTACTO</a>
+                            </li>
+
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Versión d-0.6</a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+
+            <section>
+
+                <div class="row mt-5 align-middle">
+
+                    <article class="col-12 col-md-6 shadow rounded p-3" id="inicio_proyecto">
+
+                        <div class="text-center m-2">
+                            <p class="fw-bold fs-3">CALCULADORA SOBREPRESIÓN</p>
+                        </div>
+
+                        <form class="row g-3 needs-validation" novalidate>
+
+                            <div class="col-12 text-center">
+
+                                <label for="identificacionPeso" class="form-label col-12"><strong>Identificación de
+                                        equivalecia</strong></label>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="seleccionCalculoInicial"
+                                        id="porMasa" value="0" onclick="modoCalculo()" checked>
+                                    <label class="form-check-label" for="seleccionCalculoInicial">Por masa en
+                                        kilogramos</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="seleccionCalculoInicial"
+                                        id="porVolumen" value="1" onclick="modoCalculo()">
+                                    <label class="form-check-label" for="seleccion">Por volumen del objeto</label>
+                                </div>
+
+                            </div>
+
+                            <div class="row mt-3 d-none" id="contenedorDimensiones">
+
+                                <div class="col-12 col-md-4 text-center">
+                                    <label for="alto" class="form-label col-4 col-md-12">Alto</label>
+                                    <input type="number" class="form-control col-4 col-md-12 p-3 text-center" id="alto"
+                                        oninput="calcularKiloFuerza()" placeholder="Centimetros" pattern="^[0-9]{1}"
+                                        min="0" required>
+                                </div>
+
+                                <div class="col-12 col-md-4 text-center">
+                                    <label for="alto" class="form-label col-4 col-md-12">Ancho</label>
+                                    <input type="number" class="form-control col-4 col-md-12 p-3 text-center" id="ancho"
+                                        oninput="calcularKiloFuerza()" placeholder="Centimetros" pattern="^[0-9]{1}"
+                                        min="0" required>
+                                </div>
+
+                                <div class="col-12 col-md-4 text-center">
+                                    <label for="alto" class="form-label col-4 col-md-12">Largo</label>
+                                    <input type="number" class="form-control col-4 col-md-12 p-3 text-center" id="largo"
+                                        oninput="calcularKiloFuerza()" placeholder="Centimetros" pattern="^[0-9]{1}"
+                                        min="0" required>
+                                </div>
+
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="validaMasa" class="form-label">Masa Equivalente de TNT. (Kg.)</label>
+                                <input type="number" class="form-control text-center p-3" id="validaMasa"
+                                    onchange="valida()" placeholder="Masa en kilogramos" pattern="^[0-9]{1}" min="0"
+                                    required>
+                                <div class="valid-feedback">
+                                    Digite el valor de la Masa Equivalente de TNT. (Kg.)
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="validaDistancia" class="form-label">Distancia real. (m)</label>
+                                <input type="number" class="form-control text-center p-3" id="validaDistancia"
+                                    onchange="valida()" placeholder="Distancia en metros" pattern="[0-9]{1}" min="0"
+                                    required>
+                                <div class="valid-feedback">
+                                    Digite el valor de la Distancia real. (m)
+                                </div>
+                            </div>
+
+                            <br>
+                            <div class="text-center">
+                                <button class="btn btn-success col-12 col-md-6 justify-content-center p-3 "
+                                    type="button" onclick="calcular()" data-bs-toggle="modal"
+                                    data-bs-target="#staticBackdrop" id="botonCalcular" disabled>Calcular</button>
+                            </div>
+
+                            <p class="fs-6 text-muted fst-italic text-center">
+                                Permite calcular el efecto de sobrepresión por explosiones de vapor no confinadas
+                            </p>
+
+                        </form>
+
+                    </article>
+
+                    <div class="d-lg-none d-xl-block d-xl-none d-xxl-block d-xxl-none"></div>
+
+                    <article class="col-12 col-md-6">
+
+                        <P class="text-start">
+                            EVALUACIÓN DE LA SOBREPRESIÓN, BASADA EN EL CONJUNTO DE FÓRMULAS DE SADOVSKI <sup>1</sup> ,
+                            SEGÚN EL SIGUIENTE DETALLE:
+                        </P>
+
+
+                        <P class="text-center fs-4">
+                            ΔP = 0,95 [(W <sup>1/3</sup>) R <sup>-1</sup>] + 3,9 [(W) <sup>2/3</sup> R <sup>-2</sup>] +
+                            13
+                            [W R <sup>-3</sup>]
+                        </P>
+
+                        <p class="text-start">Donde:</p>
+                        <p class="text-start"> ΔP : Sobrepresión (Atm) se debe convertir a mBar.</p>
+                        <p class="text-start"> W : Masa Equivalente de TNT. (Kg.)</p>
+                        <p class="text-start"> R : Distancia real. (m)</p>
+
+                        <p class="text-center"><sup>1</sup>Journal of Physical Security M.A.. “Sadovski, formula for
+                            blast
+                            wave from TNT
+                            explosion on earth surface at standard atmospheric conditions.” (<a
+                                href="http://www.sciencemadness.org">sciencemadness.org</a> )
+                        </p>
+                    </article>
+                </div>
+
+            </section>
+
+            <hr class="mt-5 mb-5">
+
+            <section >
+                <div class="row justify-content-center mt-5">
+                    <!--Visible solo en xs-->
+                    <article class="row d-lg-none d-xl-block d-xl-none d-xxl-block d-xxl-none">
+                        <p class="col-12 fs-4 fw-bold text-center mb-5" id="tabla">TABLA DE DESCRIPCIÓN DE LAS
+                            CONSECUENCIAS
+                            DE LA SOBREPRESIÓN</p>
+
+                        <table class="table" id="tabla">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Daños Personales</th>
+                                    <th scope="col">Sobrepresión</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr>
+                                    <th scope="row"> Umbral de muerte por lesión pulmonar </th>
+                                    <td>70.000 Pa (0,70 Bar)</td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row">Umbral de rotura de tímpano.</th>
+                                    <td>35.000 Pa (0,35 Bar)</td>
+
+                                </tr>
+                                <tr>
+                                    <th scope="row">Umbral Zona de Intervención</th>
+                                    <td>12500 Pa (0,125 Bar)</td>
+
+                                </tr>
+
+                                <tr>
+                                    <th scope="row">Umbral Zona de Alerta.</th>
+                                    <td>5000 Pa (0.050 Bar)</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <p class="text-center">Datos obtenidos desde NTP 326 Explosiones de nubes de vapor no
+                            confinadas:
+                            evaluación de la sobrepresión, tabla 1, página 6.</p>
+                    </article>
+
+                    <!-- no Visible en xs-->
+                    <article class="row d-none d-sm-block d-sm-none d-md-block">
+                        <p class="col-12 fs-4 fw-bold text-center mb-5" id="tabla">TABLA DE DESCRIPCIÓN DE LAS
+                            CONSECUENCIAS
+                            DE LA SOBREPRESIÓN</p>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Daños Personales</th>
+                                    <th scope="col">Sobrepresión</th>
+                                    <th scope="col">Daños Estructurales</th>
+                                    <th scope="col">Sobrepresión</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr>
+                                    <th scope="row"> Umbral de muerte por lesión pulmonar </th>
+                                    <td>70.000 Pa (0,70 Bar)</td>
+                                    <td>Demolición total.</td>
+                                    <td>0,80 Bar</td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row">Umbral de rotura de tímpano.</th>
+                                    <td>35.000 Pa (0,35 Bar)</td>
+                                    <td>Daños irrecuperables.</td>
+                                    <td>0,40 Bar</td>
+
+                                </tr>
+                                <tr>
+                                    <th scope="row">Umbral Zona de Intervención</th>
+                                    <td>12500 Pa (0,125 Bar)</td>
+                                    <td>Daños estructurales importantes.</td>
+                                    <td>0,18 Bar</td>
+
+                                </tr>
+
+                                <tr>
+                                    <th scope="row">Umbral Zona de Alerta.</th>
+                                    <td>5000 Pa (0.050 Bar)</td>
+                                    <td>Daños graves reparables.</td>
+                                    <td>0,15 Bar</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <p class="text-center">Datos obtenidos desde NTP 326 Explosiones de nubes de vapor no
+                            confinadas:
+                            evaluación de la sobrepresión, tabla 1, página 6.</p>
+                    </article>
+
+                    <hr class="mt-5 mb-5">
+
+                    <article class="row mt-5" id="Manual">
+
+                        <h1 class="fs-3 text-center mt-2">MANUAL DE USO DEL SISTEMA DE CALCULO</h1>
+
+                        <div class="col-12 col-md-6">
+                            <p class="fs-4 text-center">GUÍA DE USO</p>
+                            <ul>
+                                <li>Instalación
+                                    <p>No requiere instalación, Nota: Tenga en consideración que su ejecución
+                                        se fundamenta en la propiedad del Navegador Chrome.
+                                    </p>
+                                </li>
+
+                                <li>Interfaz
+                                    <ul>
+                                        <li>Responsive</li>
+                                        <p>El diseño web adaptable, es una filosofía de diseño y desarrollo cuyo
+                                            objetivo es
+                                            adaptar la apariencia de las páginas web al dispositivo que se esté
+                                            utilizando
+                                            para visitarlas.</p>
+
+                                        <li>Experiencia de usuario</li>
+                                        <p>El diseño de interfaz de usuario o ingeniería de la interfaz es el resultado
+                                            de
+                                            definir la forma, función, utilidad, ergonomía, imagen de marca y otros
+                                            aspectos
+                                            que afectan a la apariencia externa de las interfaces de usuario
+                                            en sistemas de todo tipo.</p>
+                                    </ul>
+                                </li>
+
+                                <li>Uso
+                                    <ul>
+                                        <li>Botón Calcular</li>
+                                        <p>Recopila la totalidad de los datos requeridos por pantalla, procesa y analiza
+                                            la
+                                            información para devolver el valor requerido por el algoritmo.</p>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <p class="fs-4 text-center">REQUISITOS MÍNIMOS DEL SISTEMA</p>
+                            <p>Para su utilización necesita:</p>
+                            <ul>
+                                <li>Windows
+                                    <ul>
+                                        <li>Windows 7, Windows 8, Windows 8.1, Windows 10 o una versión posterior</li>
+                                        <li>Un procesador Intel Pentium 4 o superior compatible con SSE3 Nota: Los
+                                            servidores deben tener Windows Server 2008 R2, Windows Server 2012, Windows
+                                            Server 2012 R2 o Windows Server 2016.</li>
+                                        <li>Navegador Chrome</li>
+                                    </ul>
+                                </li>
+
+                                <li>Mac
+                                    <ul>
+                                        <li>MacOS High Sierra 10.13 o una versión posterior</li>
+                                        <li>Navegador Chrome o similar</li>
+                                    </ul>
+                                </li>
+
+                                <li>Linux
+                                    <ul>
+                                        <li>64-bit Ubuntu 18.04, Debian 10, openSUSE 15.2, Fedora Linux 32 o cualquier
+                                            otra
+                                            versión de 64 bits posterior a estas</li>
+                                        <li>Un procesador Intel Pentium 4 o superior compatible con SSE3</li>
+                                        <li>Navegador Chrome o similar</li>
+                                    </ul>
+                                </li>
+
+                                <li>Android
+                                    <ul>
+                                        <li>Android Marshmallow 6.0 o una versión posterior</li>
+                                        <li>Navegador Chrome o similar</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <p>Windows Importante: Chrome va a ampliar la asistencia para Windows 7 hasta el 15 de enero
+                                del
+                                2023 con actualizaciones importantes de seguridad y estabilidad. </p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="container-fluid sticky-top  mb-0 mt-5 p-0">
+        <div class="row p-5 bg-dark bg-opacity-75 text-light">
+            <div class="row col-12 col-md-4">
+                <p class="text-light fs-5 text-center">Links de Interés</p>
+                <a href="#" class="col-12 text-decoration-none text-light fs-6 text-center">ccmit</a>
+                <a href="#" class="col-12 text-decoration-none text-light fs-6 text-center">lads</a>
+
+                <a href="#" class="col-12 text-decoration-none text-light fs-6 text-center">Reseña</a>
+            </div>
+
+            <div class="row col-12 col-md-4">
+                <p class="text-light col-12 fs-5 text-center">Contacto Desarrollador</p>
+                <a href="https://wa.me/56949163037"
+                    class="text-decoration-none text-light col-12 fs-6 text-center">WhatsApp</a>
+                <a href="mailto:valdebenito07@gmail.com"
+                    class="text-decoration-none  col-12 text-light fs-6 text-center">Correo Electrónico</a>
+            </div>
+
+            <div class="col-12 col-md-4 d-flex justify-content-center">
+                <a href="#" class="text-decoration-none">
+                    <div class="row text-center p-0 m-0  ">
+                        <p class="col-12 p-0 m-0 fs-1 fw-bold text-white text-decoration-none">CCMIT</p>
+                        <p class="col-12 p-0 m-0 fs-6 fst-italic text-success text-decoration-none">Informática &
+                            Computación</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 bg-dark p-5">
+            <p class="text-light text-center fs-6 p-0 m-0 font-size: 18px;">© CCMIT | Todos los derechos
+                reservados.</p>
+            <p class="text-light text-center p-0 m-0" style="font-size: 20px;">CRISTÓBAL A. VALDEBENITO GARCIA -
+                Ingeniero en Informática.</p>
+            <p class="text-light text-center p-0 m-0" style="font-size: 18px;">Magister en Dirección de Proyectos
+                Informáticos.</p>
+        </div>
+    </footer>
+
+    <!-- Modal con respuesta al usuario final-->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">INFORME DE RESULTADO</h1>
+
+                </div>
+                <div class="modal-body row">
+
+                    <div class="col-12" id="respuesta">
+                        <!--Carga de etiquetas de respuesta-->
+                    </div>
+
+
+                    <div class="col-12 col-md-8">
+                        <p class="col-12 fs-4 text-center m-3">Comportamiento de la detonación</p>
+                        <canvas id="myChart"></canvas>
+                    </div>
+
+
+
+                    <ul class="col-12 col-md-4 list-group" id="datosGeorreferiados">
+                        <!--Se cargan datos en razon a la ubicacion del usuario-->
+                        <p class="col-12 fs-4 text-center m-3">Datos de geolocalización</p>
+                    </ul>
+
+                </div>
+
+                <div class="modal-footer justify-content-center">
+
+                    <button type="button" class="btn btn-success col-5 p-3" id="btnCompartir"
+                        data-bs-dismiss="modal">Compartir</button>
+
+                    <button type="button" class="btn btn-primary col-5 p-3" data-bs-dismiss="modal"
+                        onclick="window.location.reload();">Entendido</button>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<!--Funionalidad  por cdn-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
+    </script>
+
+<script>
+
+    //Valida campos y funcioanlidad del boton consultar.
+    function valida() {
+
+        //Captura de datos en la vista
+        let validaMasa_w = document.getElementById("validaMasa").value;
+        let validaDistancia_r = document.getElementById("validaDistancia").value;
+
+        if (validaMasa_w !== '' && validaDistancia_r !== '') {
+            document.getElementById("botonCalcular").disabled = false;
+        }
+    }
+
+
+    function limpiarCampos() {
+        //limpio los input por volumen del objeto
+        document.getElementById("alto").value = "";
+        document.getElementById("ancho").value = "";
+        document.getElementById("largo").value = "";
+        document.getElementById("validaDistancia").value = "";
+        document.getElementById("validaMasa").value = "";
+    }
+
+
+    //Valido la opcion de calculo del usuario
+    function modoCalculo() {
+        let porMasa = document.getElementById('porMasa').value;
+        let porVolumen = document.getElementById('porVolumen').value;
+        //Recibe el checked solo cuando es seleccionado porVolumen
+        var radios = document.querySelector('input[type=radio][id=porVolumen]:checked');
+
+        if (!!radios) {
+            limpiarCampos();
+            document.getElementById("validaMasa").setAttribute("readonly", "");
+            document.getElementById('contenedorDimensiones').classList.remove('d-none');
+
+        } else {
+            limpiarCampos();
+            document.getElementById("validaMasa").removeAttribute("readonly", "");
+            document.getElementById('contenedorDimensiones').classList.add('d-none');
+
+        }
+
+    }
+
+    function calcularKiloFuerza() {
+        //Declaro constantes para equivalencia de TNT.
+        const densidadTNTenKGm3 = 1654; // kg/m³.
+        const densidadTNTenGcm3 = 1.654; // g/cm³
+        const gravedad = 9.81; // constante de aceleracion de la gravedad en la tierra
+
+        //Recupero el valor de los input para ser procesados
+        let validaAlto = parseInt(document.getElementById("alto").value);
+        let validaAncho = parseInt(document.getElementById("ancho").value);
+        let validaLargo = parseInt(document.getElementById("largo").value);
+
+        if (validaAlto !== '' && validaAncho !== '' && validaLargo !== '') {
+
+            //Calculo de el volumen del objeto v= Alto * ancho * largo
+            let volumenObjeto = parseInt((validaLargo * validaAncho) * validaAlto);
+
+            //Calculo de la masa del objeto en gramos [m = v * d] 
+            let masaObjeto = parseInt(volumenObjeto * densidadTNTenGcm3);
+
+            //Calculo del peso del objeto en newton [p = m / g]
+            let pesoObjetoN = parseInt(masaObjeto * gravedad);
+
+            //pesoObjetoN en kilogramos fuerza 
+            let pesoObjetoKg = (pesoObjetoN * (1 / gravedad)) / 1000;
+
+            //Agrego el resultado al input masa equivalente.
+            document.getElementById("validaMasa").value = pesoObjetoKg.toFixed(3);
+
+        }
+    }
+
+
+
+    function calcular() {
+
+        //Recupero el valor de los input para ser procesados
+        const validaMasa_w = parseFloat(document.getElementById("validaMasa").value);
+        const validaDistancia_r = parseFloat(document.getElementById("validaDistancia").value);
+
+        //Valida que los campos no esten vacios.
+        if (validaMasa_w <= 0 || validaDistancia_r <= -1) {
+
+
+            if (validaMasa_w <= 0) {
+                document.getElementById("respuesta").innerHTML = "El valor de la masa TNT equivalente debe ser superior a 0";
+            }
+
+            if (validaDistancia_r <= -1) {
+                document.getElementById("respuesta").innerHTML = "El valor distancia real en metros debe ser superior a 0";
+            } else {
+                document.getElementById("respuesta").innerHTML = "El valor de la masa TNT equivalente debe ser superior a 0";
+            }
+
+        } else {
+
+            //Divido la formula en procesos independientes.
+            let grup_1 = 0.95 * (Math.pow(validaMasa_w, 1 / 3) * Math.pow(validaDistancia_r, -1));
+
+            let grup_2 = 3.9 * ((Math.pow(validaMasa_w, 2 / 3)) * Math.pow(validaDistancia_r, -2));
+
+            let grup_3 = 13 * (validaMasa_w * Math.pow(validaDistancia_r, -3));
+
+            //Multiplico por atmosfera y agrupo el resultado y preparo el valor para clasificar y Fijo con 3 los decimales, así mejoro la precisión
+            let resultado = parseFloat(1.013 * (grup_1 + grup_2 + grup_3)).toFixed(3);
+
+            let caso = ""; //Variable inicializada en vacío 
+
+            /*Se clasifica el resultado y se asigna el valor a la variable caso.*/
+            if (resultado >= 0.700) {
+                caso = "umbral de muerte por lesión pulmonar.";
+            } if (resultado <= 0.699 && resultado >= 0.350) {
+                caso = "umbral de rotura de tímpano.";
+            } if (resultado <= 0.349 && resultado >= 0.125) {
+                caso = "umbral zona de intervención.";
+            } if (resultado <= 0.124 && resultado >= 0.050) {
+                caso = "umbral zona de alerta.";
+            } if (resultado <= 0.049) {
+                caso = "exterior del umbral de sobrepresión.";
+            }
+
+            // Añade una respuesta al usuario final en razón de los valores ingresados al sistema.
+            document.getElementById("respuesta").innerHTML = "Para una masa equivalente de TNT de " + validaMasa_w + " (Kg) a una distancia de " + validaDistancia_r + " (m), es posible determinar que la sobrepresión corresponde a " + resultado + " (Bar), encontrándose en el " + "<strong>" + caso + "</strong>";
+
+            const $btnCompartir = document.querySelector("#btnCompartir")
+            let mensaje = "*INFORME DE RESULTADO*: Para una masa equivalente de TNT de " + validaMasa_w + " (Kg) a una distancia de " + validaDistancia_r + " (m), es posible determinar que la sobrepresión corresponde a " + resultado + " (Bar), encontrándose en el " + caso;;
+
+            $btnCompartir.addEventListener("click", () => {
+
+                if (!mensaje) return alert("Escribe algo");
+                window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(mensaje));
+            });
+            //Ejecuto funciones externas
+            creaDiagrama();
+
+
+
+
+        }
+    }
+
+
+    function creaDiagrama() {
+
+        //Recupero el valor de los input para ser procesados
+        const validaMasa_w = parseFloat(document.getElementById("validaMasa").value);
+        const validaDistancia_r = parseFloat(document.getElementById("validaDistancia").value);
+
+        //Constantes de zonas de seguridad valor desde.
+        const pulmonar = 0.700;
+        const tímpano = 0.350;
+        const intervención = 0.125;
+        const alerta = 0.050;
+
+        //Defino los niveles de zona de seguridad.
+        let zona1 = 0;
+        let zona2 = 0;
+        let zona3 = 0;
+        let zona4 = 0;
+
+        let resultadoCalculado = 0;
+
+        let distanciaCalculada = 0;
+
+
+        if (resultadoCalculado < alerta) {
+
+            for (let i = 0; i <= 1500; i++) {
+
+                let grup1Calculado = 0.95 * (Math.pow(validaMasa_w, 1 / 3) * Math.pow(distanciaCalculada, -1));
+                let grup2Calculado = 3.9 * ((Math.pow(validaMasa_w, 2 / 3)) * Math.pow(distanciaCalculada, -2));
+                let grup3Calculado = 13 * (validaMasa_w * Math.pow(distanciaCalculada, -3));
+
+                resultadoCalculado = parseFloat(1.013 * (grup1Calculado + grup2Calculado + grup3Calculado)).toFixed(3);
+
+                ++distanciaCalculada;
+
+                if (resultadoCalculado >= 0.700) {
+                    zona1 = parseInt(distanciaCalculada);
+                }
+                if (resultadoCalculado <= 0.699 && resultadoCalculado >= 0.350) {
+                    zona2 = parseInt(distanciaCalculada);
+                } if (resultadoCalculado <= 0.349 && resultadoCalculado >= 0.125) {
+                    zona3 = parseInt(distanciaCalculada);
+                } if (resultadoCalculado <= 0.124 && resultadoCalculado >= 0.050) {
+                    zona4 = parseInt(distanciaCalculada);
+                }
+            }
+        }
+
+
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Muerte ' + zona1 + ' mts', 'Lesiones ' + zona2 + ' mts', 'Intervención ' + zona3 + ' mts', 'Alerta ' + zona4 + ' mts',],
+                datasets: [{
+                    label: 'Efecto sobrepresión para ' + validaMasa_w + ' kg de TNT',
+                    data: [zona1, zona2, zona3, zona4],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+
+    }
+
+
+
+    function offline() {
+        if (navigator.onLine) {
+            // el navegador está conectado a la red, no envio mensaje.
+        } else {
+            alert("No es posible desacargar los servicios requeridos, por favor verifique su conexión a internet. ")
+        }
+    }
+
+
+    //Geolocalizacion
+
+
+    function ubicacion() {
+        //id api axGzzqqaaqzgV3Z
+        //https://api.tutiempo.net/
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success, error);
+        } else {
+            //no hago nada por ahora.
+        }
+
+        function success(geolocationPosition) {
+            let coords = geolocationPosition.coords;
+            let key = "axGzzqqaaqzgV3Z";
+            let latitud = coords.latitude;
+            let longitud = coords.longitude;
+            let url = "https://api.tutiempo.net/json/?lan=es&apid=" + key + "&ll=" + latitud + "," + longitud + "";
+            /*Consumo API*/
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let fecha = data.day1.date;
+                    let pais = data.locality.country;
+                    let comuna = data.locality.name;
+                    let tempMax = data.day1.temperature_max;
+                    let tempMin = data.day1.temperature_min;
+                    let humedad = data.hour_hour.hour1.humidity;
+                    let presion = data.hour_hour.hour1.pressure;
+
+                    let dirViento = data.day1.wind_direction;
+
+                    /*Agrego los elementos al div*/
+                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Pais: <span class="badge bg-success rounded-pill">' + pais + '</span></li>';
+                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Comuna: <span class="badge bg-success rounded-pill">' + comuna + '</span></li>';
+
+                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Fecha: <span class="badge bg-success rounded-pill">' + fecha + '</span></li>';
+                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Temperatura maxima: <span class="badge bg-success rounded-pill">' + tempMax + ' ºC </span></li>';
+                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Temperatura minima: <span class="badge bg-success rounded-pill">' + tempMin + ' ºC </span></li>';
+                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Humedad: <span class="badge bg-success rounded-pill">' + humedad + ' % </span></li>';
+                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Presion: <span class="badge bg-success rounded-pill">' + presion + ' hPa</span></li>';
+
+                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Dirección viento: <span class="badge bg-success rounded-pill">' + dirViento + ' </span></li>';
+                })
+        }
+
+        function error(error) {
+            document.getElementById("datosGeorreferiados").innerHTML = error.message;
+        }
+
+    }
+
+
+    alert(presion);
+
+
+</script>
+
+
+</html>
