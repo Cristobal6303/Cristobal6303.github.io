@@ -220,10 +220,15 @@
                                 <input type="number" class="form-control text-center p-3" id="validaDistancia"
                                     onchange="valida()" placeholder="Distancia en metros" pattern="[0-9]{1}" min="0"
                                     required>
+
+                                <input type="text" class="d-none" id="datoPresionAlCargar" >
+
                                 <div class="valid-feedback">
                                     Digite el valor de la Distancia real. (m)
                                 </div>
                             </div>
+
+
 
                             <br>
                             <div class="text-center">
@@ -235,6 +240,7 @@
                             <p class="fs-6 text-muted fst-italic text-center">
                                 Permite calcular el efecto de sobrepresión por explosiones de vapor no confinadas
                             </p>
+
 
                         </form>
 
@@ -529,7 +535,7 @@
                         <!--Se cargan datos en razon a la ubicacion del usuario-->
                         <p class="col-12 fs-4 text-center m-3">Datos de geolocalización</p>
 
-                        
+
                     </ul>
 
                 </div>
@@ -548,7 +554,7 @@
 
                 </div>
 
-                
+
             </div>
         </div>
     </div>
@@ -582,6 +588,7 @@
         document.getElementById("largo").value = "";
         document.getElementById("validaDistancia").value = "";
         document.getElementById("validaMasa").value = "";
+        document.getElementById("datoPresionAlCargar").value = "";
     }
 
 
@@ -641,10 +648,20 @@
 
     function calcular() {
 
-        //Recupero el valor de los input para ser procesados
-        const validaMasa_w = parseFloat(document.getElementById("validaMasa").value);
-        const validaDistancia_r = parseFloat(document.getElementById("validaDistancia").value);
 
+        //Recupero el valor de los input para ser procesados
+        let validaMasa_w = parseFloat(document.getElementById("validaMasa").value);
+        let validaDistancia_r = parseFloat(document.getElementById("validaDistancia").value);
+        let mhpa = document.getElementById("datoPresionAlCargar").value;
+        let mhpaCalculada = 0;
+
+        if (mhpa !== ''){
+            mhpaCalculada = mhpa /  1000;
+        } else {
+            mhpaCalculada = 1.013;
+        }
+
+        alert (mhpaCalculada);
 
 
         //Valida que los campos no esten vacios.
@@ -672,7 +689,7 @@
             let grup_3 = 13 * (validaMasa_w * Math.pow(validaDistancia_r, -3));
 
             //Multiplico por atmosfera y agrupo el resultado y preparo el valor para clasificar y Fijo con 3 los decimales, así mejoro la precisión
-            let resultado = parseFloat(1.013 * (grup_1 + grup_2 + grup_3)).toFixed(3);
+            let resultado = parseFloat( mhpaCalculada * (grup_1 + grup_2 + grup_3)).toFixed(3);
 
             let caso = ""; //Variable inicializada en vacío 
 
@@ -709,9 +726,17 @@
     function creaDiagrama() {
 
         //Recupero el valor de los input para ser procesados
-        const validaMasa_w = parseFloat(document.getElementById("validaMasa").value);
-        const validaDistancia_r = parseFloat(document.getElementById("validaDistancia").value);
+        let validaMasa_w = parseFloat(document.getElementById("validaMasa").value);
+        let validaDistancia_r = parseFloat(document.getElementById("validaDistancia").value);
 
+        let mhpa = document.getElementById("datoPresionAlCargar").value;
+        let mhpaCalculada = 0;
+
+        if (mhpa !== ''){
+            mhpaCalculada = mhpa /  1000;
+        } else {
+            mhpaCalculada = 1.013;
+        }
         //Constantes de zonas de seguridad valor desde.
         const pulmonar = 0.700;
         const tímpano = 0.350;
@@ -728,7 +753,6 @@
 
         let distanciaCalculada = 0;
 
-
         if (resultadoCalculado < alerta) {
 
             for (let i = 0; i <= 1500; i++) {
@@ -737,7 +761,7 @@
                 let grup2Calculado = 3.9 * ((Math.pow(validaMasa_w, 2 / 3)) * Math.pow(distanciaCalculada, -2));
                 let grup3Calculado = 13 * (validaMasa_w * Math.pow(distanciaCalculada, -3));
 
-                resultadoCalculado = parseFloat(1.013 * (grup1Calculado + grup2Calculado + grup3Calculado)).toFixed(3);
+                resultadoCalculado = parseFloat(mhpaCalculada * (grup1Calculado + grup2Calculado + grup3Calculado)).toFixed(3);
 
                 ++distanciaCalculada;
 
@@ -799,60 +823,75 @@
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(success, error);
-        } else {
-            //no hago nada por ahora.
-        }
 
-        function success(geolocationPosition) {
-            let coords = geolocationPosition.coords;
-            let key = "axGzzqqaaqzgV3Z";
-            let latitud = coords.latitude;
-            let longitud = coords.longitude;
-            let url = "https://api.tutiempo.net/json/?lan=es&apid=" + key + "&ll=" + latitud + "," + longitud + "";
-            /*Consumo API*/
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    let fecha = data.day1.date;
-                    let hora = data.hour_hour.hour1.hour_data;
+            function success(geolocationPosition) {
+                let coords = geolocationPosition.coords;
+                let key = "axGzzqqaaqzgV3Z";
+                let latitud = coords.latitude;
+                let longitud = coords.longitude;
+                let url = "https://api.tutiempo.net/json/?lan=es&apid=" + key + "&ll=" + latitud + "," + longitud + "";
+                /*Consumo API*/
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        let fecha = data.day1.date;
+                        let hora = data.hour_hour.hour1.hour_data;
 
-                    let pais = data.locality.country;
-                    let comuna = data.locality.name;
-                    let tempMax = data.day1.temperature_max;
-                    let tempMin = data.day1.temperature_min;
-                    let humedad = data.hour_hour.hour1.humidity;
-                    const presion = data.hour_hour.hour1.pressure;
+                        let pais = data.locality.country;
+                        let comuna = data.locality.name;
+                        let tempMax = data.day1.temperature_max;
+                        let tempMin = data.day1.temperature_min;
+                        let humedad = data.hour_hour.hour1.humidity;
+                        let presion = data.hour_hour.hour1.pressure;
 
-                    let dirViento = data.day1.wind_direction;
-                    let veloViento = data.hour_hour.hour1.wind;
+                        let dirViento = data.day1.wind_direction;
+                        let veloViento = data.hour_hour.hour1.wind;
 
-                    /*Agrego los elementos al div*/
-                    
-                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">País: <span class="badge bg-success rounded-pill">' + pais + '</span></li>';
-                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Comuna: <span class="badge bg-success rounded-pill">' + comuna + '</span></li>';
+                        /*Agrego los elementos al div*/
 
-                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Temperatura máxima: <span class="badge bg-success rounded-pill">' + tempMax + ' ºC </span></li>';
-                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Temperatura mínima: <span class="badge bg-success rounded-pill">' + tempMin + ' ºC </span></li>';
-                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Humedad: <span class="badge bg-success rounded-pill">' + humedad + ' % </span></li>';
-                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Presión: <span class="badge bg-success rounded-pill">' + presion + ' hPa</span></li>';
+                        document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">País: <span class="badge bg-success rounded-pill">' + pais + '</span></li>';
+                        document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Comuna: <span class="badge bg-success rounded-pill">' + comuna + '</span></li>';
 
-                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Dirección del viento: <span class="badge bg-success rounded-pill">' + dirViento + ' </span></li>';
-                    document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Velocidad del viento: <span class="badge bg-success rounded-pill">' + veloViento + ' km/h</span></li>';
-                    
-                    //Agradecimientos 
-                    document.getElementById("datosGeorreferiados").innerHTML += '<p class="fs-6 text-muted text-center"> Fuente: <a href="https://www.tutiempo.net">tutiempo.net</a> el ' + fecha + ' a las ' + hora + '  </p>'
-                    
-                })
+                        document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Temperatura máxima: <span class="badge bg-success rounded-pill">' + tempMax + ' ºC </span></li>';
+                        document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Temperatura mínima: <span class="badge bg-success rounded-pill">' + tempMin + ' ºC </span></li>';
+                        document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Humedad: <span class="badge bg-success rounded-pill">' + humedad + ' % </span></li>';
+                        document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Presión: <span class="badge bg-success rounded-pill">' + presion + ' hPa</span></li>';
+
+                        document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Dirección del viento: <span class="badge bg-success rounded-pill">' + dirViento + ' </span></li>';
+                        document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Velocidad del viento: <span class="badge bg-success rounded-pill">' + veloViento + ' km/h</span></li>';
+
+
+                        document.getElementById("datoPresionAlCargar").value = presion;
+
+                        //Agradecimientos 
+                        document.getElementById("datosGeorreferiados").innerHTML += '<p class="fs-6 text-muted text-center"> Fuente: <a href="https://www.tutiempo.net">tutiempo.net</a> el ' + fecha + ' a las ' + hora + '  </p>'
+                    })
+
+              
+            }
+
         }
 
         function error(error) {
             document.getElementById("datosGeorreferiados").innerHTML = error.message;
+            //no hago nada por ahora.
+            document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">País: <span class="badge bg-success rounded-pill">Chile</span></li>';
+            document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Comuna: <span class="badge bg-success rounded-pill">Santiago</span></li>';
+
+            document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Temperatura máxima: <span class="badge bg-success rounded-pill">Sin determinar</span></li>';
+            document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Temperatura mínima: <span class="badge bg-success rounded-pill">Sin determinar</span></li>';
+            document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Humedad: <span class="badge bg-success rounded-pill">Sin determinar</span></li>';
+            document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Presión: <span class="badge bg-success rounded-pill">1013 hPa</span></li>';
+
+            document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Dirección del viento: <span class="badge bg-success rounded-pill">Sin determinar</span></li>';
+            document.getElementById("datosGeorreferiados").innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">Velocidad del viento: <span class="badge bg-success rounded-pill">Sin determinar</span></li>';
+
+            //Agradecimientos 
+            document.getElementById("datosGeorreferiados").innerHTML += '<p class="fs-6 text-muted text-center"> Fuente: Datos por defecto al no tener acceso a geolocalización</p>'
         }
 
     }
 
-
-    alert(presion);
 
 
 </script>
