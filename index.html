@@ -18,6 +18,9 @@
     <!--CDN para graficos-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!--Favicon-->
+    <link rel="icon" type="image/jpg" href="logo-256.ico"/>
+
     <script>
         $(window).on('load', function () {
             setTimeout(function () {
@@ -156,7 +159,7 @@
                     <article class="col-12 col-md-6 shadow rounded p-3" id="inicio_proyecto">
 
                         <div class="text-center m-2">
-                            <p class="fw-bold fs-3">SOBREPRESIÓN</p>
+                            <p class="fw-bold fs-3">CALCULADORA SOBREPRESIÓN</p>
                         </div>
 
                         <form class="row g-3 needs-validation" novalidate>
@@ -567,8 +570,10 @@
     </script>
 
 <script>
+
     //Valida campos y funcioanlidad del boton consultar.
     function valida() {
+
         //Captura de datos en la vista
         let validaMasa_w = document.getElementById("validaMasa").value;
         let validaDistancia_r = document.getElementById("validaDistancia").value;
@@ -577,7 +582,8 @@
             document.getElementById("botonCalcular").disabled = false;
         }
     }
-    
+
+
     function limpiarCampos() {
         //limpio los input por volumen del objeto
         document.getElementById("alto").value = "";
@@ -587,6 +593,7 @@
         document.getElementById("validaMasa").value = "";
         document.getElementById("datoPresionAlCargar").value = "";
     }
+
 
     //Valido la opcion de calculo del usuario
     function modoCalculo() {
@@ -604,6 +611,7 @@
             limpiarCampos();
             document.getElementById("validaMasa").removeAttribute("readonly", "");
             document.getElementById('contenedorDimensiones').classList.add('d-none');
+
         }
 
     }
@@ -643,6 +651,7 @@
 
     function calcular() {
 
+
         //Recupero el valor de los input para ser procesados
         let validaMasa_w = parseFloat(document.getElementById("validaMasa").value);
         let validaDistancia_r = parseFloat(document.getElementById("validaDistancia").value);
@@ -658,6 +667,7 @@
         //Valida que los campos no esten vacios.
         if (validaMasa_w <= 0 || validaDistancia_r <= -1) {
 
+
             if (validaMasa_w <= 0) {
                 document.getElementById("respuesta").innerHTML = "El valor de la masa TNT equivalente debe ser superior a 0";
             }
@@ -669,6 +679,7 @@
             }
 
         } else {
+
 
             //Divido la formula en procesos independientes.
             let grup_1 = 0.95 * (Math.pow(validaMasa_w, 1 / 3) * Math.pow(validaDistancia_r, -1));
@@ -710,6 +721,7 @@
             creaDiagrama();
         }
     }
+
 
     function creaDiagrama() {
 
@@ -765,6 +777,7 @@
                 }
             }
         }
+
 
         const ctx = document.getElementById('myChart');
 
