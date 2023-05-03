@@ -19,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!--Favicon-->
-    <link rel="icon" type="image/jpg" href="logo-256.ico"/>
+    <link rel="icon" type="image/jpg" href="logo-256.ico" />
 
     <script>
         $(window).on('load', function () {
@@ -224,7 +224,7 @@
                                     onchange="valida()" placeholder="Distancia en metros" pattern="[0-9]{1}" min="0"
                                     required>
 
-                                <input type="text" class="d-none" id="datoPresionAlCargar" >
+                                <input type="text" class="d-none" id="datoPresionAlCargar">
 
                                 <div class="valid-feedback">
                                     Digite el valor de la Distancia real. (m)
@@ -657,8 +657,8 @@
         let mhpa = document.getElementById("datoPresionAlCargar").value;
         let mhpaCalculada = 0;
 
-        if (mhpa !== ''){
-            mhpaCalculada = mhpa /  1000;
+        if (mhpa !== '') {
+            mhpaCalculada = mhpa / 1000;
         } else {
             mhpaCalculada = 1.013;
         }
@@ -688,7 +688,7 @@
             let grup_3 = 13 * (validaMasa_w * Math.pow(validaDistancia_r, -3));
 
             //Multiplico por atmosfera y agrupo el resultado y preparo el valor para clasificar y Fijo con 3 los decimales, así mejoro la precisión
-            let resultado = parseFloat( mhpaCalculada * (grup_1 + grup_2 + grup_3)).toFixed(3);
+            let resultado = parseFloat(mhpaCalculada * (grup_1 + grup_2 + grup_3)).toFixed(3);
 
             let caso = ""; //Variable inicializada en vacío 
 
@@ -727,12 +727,11 @@
         //Recupero el valor de los input para ser procesados
         let validaMasa_w = parseFloat(document.getElementById("validaMasa").value);
         let validaDistancia_r = parseFloat(document.getElementById("validaDistancia").value);
-
         let mhpa = document.getElementById("datoPresionAlCargar").value;
         let mhpaCalculada = 0;
 
-        if (mhpa !== ''){
-            mhpaCalculada = mhpa /  1000;
+        if (mhpa !== '') {
+            mhpaCalculada = mhpa / 1000;
         } else {
             mhpaCalculada = 1.013;
         }
@@ -742,11 +741,12 @@
         const intervención = 0.125;
         const alerta = 0.050;
 
-        //Defino los niveles de zona de seguridad.
+        //Defino los niveles de zona de seguridad e inicializo en 0.
         let zona1 = 0;
         let zona2 = 0;
         let zona3 = 0;
         let zona4 = 0;
+
 
         let resultadoCalculado = 0;
 
@@ -783,12 +783,24 @@
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Muerte ' + zona1 + ' mts', 'Lesiones ' + zona2 + ' mts', 'Intervención ' + zona3 + ' mts', 'Alerta ' + zona4 + ' mts',],
-                datasets: [{
+
+                labels: ['Muerte ' + zona1 + ' mts', 'Lesiones ' + zona2 + ' mts', 'Intervención ' + zona3 + ' mts', 'Alerta ' + zona4 + ' mts'],
+                datasets: 
+            [
+                {
                     label: 'Efecto sobrepresión para ' + validaMasa_w + ' kg de TNT',
                     data: [zona1, zona2, zona3, zona4],
-                    borderWidth: 1
-                }]
+                    borderWidth: 1,
+
+                },
+
+                {
+                    label: 'Distancia calculada a ' + validaDistancia_r + ' metros',
+                    data: [validaDistancia_r, validaDistancia_r, validaDistancia_r, validaDistancia_r],
+                    borderWidth: 2,
+
+                },
+            ]
             },
             options: {
                 scales: {
@@ -866,7 +878,7 @@
                         document.getElementById("datosGeorreferiados").innerHTML += '<p class="fs-6 text-muted text-center"> Fuente: <a href="https://www.tutiempo.net">tutiempo.net</a> el ' + fecha + ' a las ' + hora + '  </p>'
                     })
 
-              
+
             }
 
         }
